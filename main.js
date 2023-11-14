@@ -10,8 +10,8 @@ const argon2 = require('argon2');
 const CookieP = require('cookie-parser');
 const userAgent = require('express-useragent');
 const crypto = require('crypto');
-require('dotenv').config();
 const { makeKey, execAwait, makePlist, deleteFiles } = require('./utils');
+require('dotenv').config();
 
 const app = express();
 
