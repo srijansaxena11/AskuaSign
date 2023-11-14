@@ -48,7 +48,7 @@ async function makePlist(bid, uuid, nya, domain)
                             <key>kind</key>
                             <string>software-package</string>
                             <key>url</key>
-                            <string>https://sign.askua.ovh/apps/${uuid}.ipa</string>
+                            <string>${domain}/apps/${uuid}.ipa</string>
                         </dict>
                         <dict>
                             <key>kind</key>
