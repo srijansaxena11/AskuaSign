@@ -16,7 +16,9 @@ require('dotenv').config();
 const app = express();
 
 app.use(CookieP());
-app.use(fileUpload());
+app.use(fileUpload({
+  limits: { fileSize: 5 * 1024 * 1024 * 1024 },
+}));
 app.use(userAgent.express());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/assets/', express.static(__dirname + '/assets'));
