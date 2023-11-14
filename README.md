@@ -2,6 +2,7 @@
 IPA Signing API using zsign
 
 # Setup
+## Natively
 1. Install zsign [zsign](https://github.com/Athenua/zsign)
     ```console
     gh repo clone Athenua/zsign
@@ -40,5 +41,13 @@ IPA Signing API using zsign
     ```console
     node .
     ```
+## Docker
+1. clone repo
+   ```console
+   git clone --depth=1 https://github.com/Athenua/AskuaSign
+   ```
+2. open up `docker-compose.yml` and change `DOMAIN` on line 9 (should be able to use `http://127.0.0.1:3000` if you're only hosting locally)
+3. `docker compose up -d`
+4. askuasign is now running locally on http://127.0.0.1:3000 !
 
 I love you!
