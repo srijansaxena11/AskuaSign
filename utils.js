@@ -32,7 +32,7 @@ async function execAwait(cmd) {
     }
 }
 
-async function makePlist(bid, uuid, nya)
+async function makePlist(bid, uuid, nya, domain)
 {
     const plist = `<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
