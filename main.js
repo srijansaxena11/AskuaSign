@@ -251,9 +251,9 @@ setInterval(async () => {
         try
         {
             if(app.Expire < moment().unix()) {
+                await Apps.deleteOne({ UUID: uuid });
                 await fs.unlinkSync(path.join(__dirname, 'files', 'plists', `${uuid}.plist`));
                 await fs.unlinkSync(path.join(__dirname, 'files', 'signed', `${uuid}.ipa`));
-                await Apps.deleteOne({ UUID: uuid });
             }
         } catch (_) {
             null
@@ -264,9 +264,9 @@ setInterval(async () => {
         try
         {
             if(cert.expire < moment().unix()) {
+                await StoredCerts.deleteOne({ uuid: uuid });
                 await fs.unlinkSync(path.join(__dirname, 'files', 'certs', `${uuid}.p12`));
                 await fs.unlinkSync(path.join(__dirname, 'files', 'certs', `${uuid}.mobileprovision`));
-                await StoredCerts.deleteOne({ uuid: uuid });
             }
         } catch (_) {
             null
