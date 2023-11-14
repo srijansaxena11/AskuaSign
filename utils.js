@@ -32,7 +32,7 @@ async function execAwait(cmd) {
     }
 }
 
-async function makePlist(bid, uuid, nya)
+async function makePlist(bid, uuid, nya, domain)
 {
     const plist = `<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
@@ -48,7 +48,7 @@ async function makePlist(bid, uuid, nya)
                             <key>kind</key>
                             <string>software-package</string>
                             <key>url</key>
-                            <string>https://sign.askua.ovh/apps/${uuid}.ipa</string>
+                            <string>${domain}/apps/${uuid}.ipa</string>
                         </dict>
                         <dict>
                             <key>kind</key>

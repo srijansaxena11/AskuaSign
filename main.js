@@ -10,8 +10,8 @@ const argon2 = require('argon2');
 const CookieP = require('cookie-parser');
 const userAgent = require('express-useragent');
 const crypto = require('crypto');
-require('dotenv').config();
 const { makeKey, execAwait, makePlist, deleteFiles } = require('./utils');
+require('dotenv').config();
 
 const app = express();
 
@@ -67,6 +67,11 @@ async function signApp(uuid, res, req, store) {
             await DUsers.updateOne({token: token}, {$set: {expire: moment().add(3, 'days').unix()}});
         }
     }
+
+    if(token && store == "false") {
+        res.clearCookie('token');
+    }
+    res.clearCookie('nya');
     
     const app = await Apps.findOne({ UUID: uuid });
 
@@ -86,14 +91,8 @@ async function signApp(uuid, res, req, store) {
     if(nya == true) {
         return res.json({ status: 'error', message: "error while signing app (incorrect password)" });
     }
-
-    res.clearCookie('nya');
-
-    if(token && store == "false") {
-        res.clearCookie('token');
-    }
-
-    const plist = await makePlist(bid, uuid, nya);
+    
+    const plist = await makePlist(bid, uuid, nya, domain);
     await fs.writeFileSync(plistPath, plist);
 }
 
@@ -124,6 +123,8 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res)
             if(meow) {
                 await Apps.insertOne(AppStruct);
                 return;
+            }else{
+                res.clearCookie('token');
             }
         }else {
             await storeCert(req, res, uuid);
@@ -137,7 +138,7 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res)
     }
 
     await Apps.insertOne(AppStruct);
-    await p12.mv(p12Path);
+    await p12.mv(p12Path); 
     await prov.mv(provPath);
 }
 
