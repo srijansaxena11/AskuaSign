@@ -1,6 +1,8 @@
 const { exec } = require("child_process");
 const util = require("util");
 const execPromise = util.promisify(exec);
+const fs = require('fs');
+const path = require('path');
 
 function makeKey(le) 
 {
@@ -90,8 +92,8 @@ async function deleteFiles(uuid) {
         await fs.unlinkSync(path.join(__dirname, 'files', 'temp', `${uuid}.ipa`));
         await fs.unlinkSync(path.join(__dirname, 'files', 'certs', `${uuid}.p12`));
         await fs.unlinkSync(path.join(__dirname, 'files', 'certs', `${uuid}.mobileprovision`));
-    } catch (_) {
-        null
+    } catch (e) {
+        console.log(e)
     }
 }
 
