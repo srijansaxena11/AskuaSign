@@ -7,6 +7,7 @@ const moment = require('moment-timezone');
 const MongoClient = require('mongodb').MongoClient;
 const {sign, verify} = require('jsonwebtoken');
 const argon2 = require('argon2');
+const axios = require('axios');
 const CookieP = require('cookie-parser');
 const userAgent = require('express-useragent');
 const crypto = require('crypto');
@@ -34,7 +35,7 @@ app.use('/', router);
 const port = process.env.PORT || 3000;
 const mongourl = process.env.MongoURL || "mongodb://localhost:27017";
 const jwttoken = process.env.JWTToken || "askuasign";
-const domain = process.env.Domain || "${domain}";
+const domain = process.env.Domain || "https://sign.askua.ovh";
 
 const client = new MongoClient(mongourl);
 
@@ -117,7 +118,21 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res)
     const Apps = await DB.collection('Apps');
     const DUsers = await DB.collection('Stored');
 
-    await app.mv(appPath);
+    // check if app is file or string
+    if(typeof app === "object") {
+        await app.mv(appPath);
+    }else if(typeof app === "string") {
+        var data = await axios.get(app, {responseType: 'arraybuffer'});
+        await fs.writeFileSync(appPath, data.data);
+    }
+
+
+    if(typeof app == "object") {
+        await app.mv(appPath);
+    }else if(typeof app == "string") {
+        var data = await axios.get(app, {responseType: 'arraybuffer'});
+        await fs.writeFileSync(appPath, data.data);
+    }
     var cookie = req?.cookies?.token;
     if(store == "true") {
         if(cookie) {
@@ -156,27 +171,26 @@ router.get('/notice', async (req, res) => {
 });
 
 router.post('/upload', async (req, res) => {
-    const app = req?.files?.ipa;
-    if (!app) {
+    var app = req?.files?.ipa;
+    if (!app && !req.body?.ipa) {
         res.json({ status: 'error', message: "Missing parameters (IPA)" });
         return;
     }
+    app = app ? app : req.body?.ipa;
     
     const p12 = req?.files?.p12;
     if (!p12 && !req.body?.p12) {
         res.json({ status: 'error', message: "Missing parameters (P12)" });
         return;
     }
-    p12 ? p12 : req.body?.p12;
 
     const prov = req?.files?.prov;
     if (!prov && !req.body?.prov) {
         res.json({ status: 'error', message: "Missing parameters (PROV)" });
         return;
     }
-    prov ? prov : req.body?.p12;
 
-    const { password, bname, bid, bversion, store } = req.body;
+    const { password, bname, bid, store } = req.body;
 
     const missingParams = ['ipa', 'p12', 'prov']
         .filter(param => !req.body[param] && !req.files[param]);

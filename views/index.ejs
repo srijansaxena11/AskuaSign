@@ -43,7 +43,7 @@
                       <label class="fs-6 fw-semibold form-label mt-3">
                         <span class="required">IPA</span>
                       </label>
-                      <div class="input-group">
+                      <div class="input-group" id="ipagroup">
                         <input
                           type="file"
                           class="form-control"
@@ -52,6 +52,9 @@
                           aria-label="Upload"
                           accept=".ipa,application/octet-stream"
                         />
+                        <button type="button" id="urlswap" class="btn btn-secondary">
+                          <span class="indicator-label" id="typetext"> Switch to URL </span>
+                      </button>
                       </div>
                     </div>
 
@@ -162,7 +165,7 @@
                       </div>
                     </div>
                     <div class="separator mb-6"></div>
-                    <div class="text-center">
+                    <div class="text-center" id="waittext">
                       <button
                         type="button"
                         id="uploadipa"
@@ -172,7 +175,7 @@
                         </span>
                       </button>
                     </div>
-                    <div class="dropzone-progress">
+                    <div class="dropzone-progress" id="nyaster">
                       <div
                         class="progress bg-gray-300"
                         id="border"
@@ -224,6 +227,15 @@
         document.getElementById("progressBar").style.opacity = 1;
         document.getElementById("border").style.opacity = 1;
         document.getElementById("progressBar").style.width = percent * 100 + '%'
+        console.log(percent)
+        if(percent === 1){
+          if(document.getElementById("ipa").type === "text"){
+            document.getElementById("progressBar").remove();
+            document.getElementById("border").remove();
+            document.getElementById("waittext").innerHTML = "<span class='fs-6 fw-semibold form-label mt-3'>Please wait while we download your IPA...</span>";
+            document.getElementById("waittext").class = "text-center fs-6 fw-semibold form-label mt-3";
+         }
+        }
       }
 
       <% if(token) { %>
@@ -252,11 +264,23 @@
           })
         }
       }))
+      
+      document.getElementById("urlswap").addEventListener("click", (function() {
+        if(document.getElementById("ipa").type === "file"){
+          document.getElementById("ipa").type = "text";
+          document.getElementById("ipa").placeholder = "https://example.com/app.ipa";
+          document.getElementById("typetext").innerHTML = "Switch to File";
+        }else{
+          document.getElementById("ipa").type = "file";
+          document.getElementById("ipa").placeholder = "";
+          document.getElementById("typetext").innerHTML = "Switch to URL";
+        }
+      }))
 
       document.getElementById("uploadipa").addEventListener("click", (function() {
               (async () => {
                     var formData = new FormData();
-                    formData.append("ipa", document.getElementById("ipa").files[0]);
+                    formData.append("ipa", document.getElementById("ipa").type === "file" ? document.getElementById("ipa").files[0] : document.getElementById("ipa").value);
                     <% if(token) { %>
                     formData.append("p12", "stored");
                     formData.append("prov", 'stored');
