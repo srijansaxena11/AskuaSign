@@ -8,6 +8,8 @@ services:
       args:
         DOMAIN: https://askuasign.example.com  # remember to actually fill this out lol !!
     restart: unless-stopped
+    volumes:
+      - ./files:/root/AskuaSign/files
     ports:
       - 3000:3000/tcp
     networks:
