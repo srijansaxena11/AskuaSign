@@ -80,6 +80,7 @@ async function signApp(uuid, res, req, store) {
 
     const appname = app.CustomName;
     const bid = app.BundleID;
+    const prov = app.DeleteProv;
 
     const password = signedtoken.password;
     
@@ -89,7 +90,7 @@ async function signApp(uuid, res, req, store) {
     const plistPath = path.join(__dirname, 'files', 'plists', `${uuid}.plist`);
     const signAppPath = path.join(__dirname, 'files', 'signed', `${uuid}.ipa`);
 
-    var nya = await execAwait(`zsign -k ${p12Path} -m ${provPath} ${password ? `-p ${password}` : ""} ${appPath} -o ${signAppPath} ${bid ? `-b ${bid.replace(/\s+/g, ' ').trim()}` : ""} ${appname ? `-n '${appname}'` : ""} -f`);
+    var nya = await execAwait(`zsign -k ${p12Path} -m ${provPath} ${password ? `-p ${password}` : ""} ${appPath} -o ${signAppPath} ${bid ? `-b ${bid.replace(/\s+/g, ' ').trim()}` : ""} ${appname ? `-n '${appname}'` : ""} -f ${prov ? '-x' : ''}`);
 
     if(nya == true) {
         return res.json({ status: 'error', message: "error while signing app (incorrect password)" });
@@ -99,7 +100,7 @@ async function signApp(uuid, res, req, store) {
     await fs.writeFileSync(plistPath, plist);
 }
 
-async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res)
+async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, removeprov)
 {
     const appPath = path.join(__dirname, 'files', 'temp', `${uuid}.ipa`);
     const p12Path = path.join(__dirname, 'files', 'certs', `${uuid}.p12`);
@@ -110,6 +111,7 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res)
         CustomName: bname,
         Name: `${uuid}.ipa`,
         BundleID: bid,
+        DeleteProv: removeprov,
         Expire: moment().add(3, 'days').unix()
     }
 
@@ -190,7 +192,7 @@ router.post('/upload', async (req, res) => {
         return;
     }
 
-    const { password, bname, bid, store } = req.body;
+    const { password, bname, bid, store, removeprov } = req.body;
 
     const missingParams = ['ipa', 'p12', 'prov']
         .filter(param => !req.body[param] && !req.files[param]);
@@ -206,7 +208,7 @@ router.post('/upload', async (req, res) => {
 
         res.cookie('nya', nya, { maxAge: 31536000 });
 
-        await uploadApp(app, p12, prov, bname, bid, uuid, store, req, res);
+        await uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, removeprov);
 
         res.json({ status: 'ok', message: "Uploaded!", uuid: uuid});
     } catch (error) {

@@ -29,7 +29,7 @@
   <body id="kt_body" class="dark-mode auth-bg">
     <div class="d-flex flex-column flex-root">
       <div class="d-flex flex-column flex-lg-row flex-column-fluid">
-        <div class="d-flex flex-column flex-lg-row-fluid py-10">
+        <div class="d-flex flex-column flex-lg-row-fluid">
           <div class="d-flex flex-center flex-column flex-column-fluid">
             <div class="w-lg-725px p-5 p-lg-5 mx-auto">
               <div class="card">
@@ -147,22 +147,46 @@
                           />
                         </div>
                       </div>
-                      <div class="col">
-                        <div class="fv-row mb-7">
-                          <div
-                            class="form-check form-switch form-check-custom form-check-solid"
-                          >
-                            <input class="form-check-input" type="checkbox"
-                            id="store" <%= token ? 'checked' : '' %>>
-                            <label
-                              class="form-check-label fw-semibold form-label mt-3"
-                              for="store"
-                            >
-                              Store Certificate
+                      <% if(!mobile) { %>
+                      <div class="fv-row mb-7">
+                        <div class="form-check form-switch form-check-custom form-check-solid">
+                            <div class="form-check form-switch form-check-custom form-check-solid">
+                              <input class="form-check-input" type="checkbox" id="store" <%= token ? 'checked' : '' %>>
+                              <label class="form-check-label fw-semibold form-label mt-3" for="store">
+                                Store Certificate
+                              </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="fv-row mb-7">
+                        <div class="form-check form-switch form-check-custom form-check-solid">
+                          <div class="form-check form-switch form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" value="" id="removeprov">
+                            <label class="form-check-label fw-semibold form-label mt-3" for="store">
+                              Remove MobileProvision
                             </label>
                           </div>
                         </div>
                       </div>
+                      <% }else{ %>
+                        <div class="fv-row mb-7">
+                          <div class="form-check form-switch form-check-custom form-check-solid">
+                            <div class="form-check form-switch form-check-custom form-check-solid me-5">
+                              <input class="form-check-input" type="checkbox" id="store" <%= token ? 'checked' : '' %>>
+                              <label class="form-check-label fw-semibold form-label mt-3" for="store">
+                                Store Certificate
+                              </label>
+                            </div>
+
+                          <div class="form-check form-switch form-check-custom form-check-solid">
+                              <input class="form-check-input" type="checkbox" value="" id="removeprov">
+                              <label class="form-check-label fw-semibold form-label mt-3" for="store">
+                                Remove MobileProvision
+                              </label>
+                          </div>
+                          </div>
+                        </div>
+                      <% } %>
                     </div>
                     <div class="separator mb-6"></div>
                     <div class="text-center" id="waittext">
@@ -292,6 +316,7 @@
                     formData.append("bname", document.getElementById("bname").value);
                     formData.append("bid", document.getElementById("bid").value);
                     formData.append("store", document.getElementById("store").checked);
+                    formData.append("removeprov", document.getElementById("removeprov").checked);
 
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", "/upload", true);
