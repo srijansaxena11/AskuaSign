@@ -12,29 +12,21 @@
     <meta property="og:site_name" content="AppTesters IPA Signer" />
     <link
       rel="shortcut icon"
-      href="/assets/apptesters-iconx1024.png"
+      href="https://sign.apptesters.org/assets/apptesters-iconx1024.png"
     />
     <link
       href="https://sign.askua.ovh/assets/plugins/global/plugins.dark.bundle.css"
       rel="stylesheet"
       type="text/css"
     />
-<link
-      href="/assets/style.dark.bundle.css"
+    <link
+      href="https://sign.askua.ovh/assets/css/style.dark.bundle.css"
       rel="stylesheet"
       type="text/css"
     />
-    <!--<link
-      href="https://apptesters.org/wp-content/uploads/2023/11/style.dark_.bundle.css"
-      rel="stylesheet"
-      type="text/css"
-    />-->
   </head>
 
   <body id="kt_body" class="dark-mode auth-bg">
-<div style="
-    text-align: center;
-    padding-top:40px; background-color:#000000;padding-bottom:25px;"><h1>AppTesters IPA Signer</h1></div>
     <div class="d-flex flex-column flex-root" style="background-color:#161616">
       <div class="d-flex flex-column flex-lg-row flex-column-fluid">
         <div class="d-flex flex-column flex-lg-row-fluid py-10">
@@ -60,8 +52,8 @@
                           aria-label="Upload"
                           accept=".ipa,application/octet-stream"
                         />
-                        <button type="button" id="urlswap" class="btn btn-secondary" style="background-color:#00a3ff">
-                          <span class="indicator-label" id="typetext" style="color:white;"> Switch to URL </span>
+                        <button type="button" id="urlswap" class="btn btn-secondary">
+                          <span class="indicator-label" id="typetext"> Switch to URL </span>
                       </button>
                       </div>
                     </div>
@@ -118,7 +110,6 @@
                           <input
                             type="text"
                             class="form-control form-control-solid"
-				style="background-color:#161616"
                             name="password"
                             id="password"
                           />
@@ -131,13 +122,12 @@
                       <div class="col">
                         <div class="fv-row mb-7">
                           <label class="fs-6 fw-semibold form-label mt-3">
-                            <span>Change App Name</span>
+                            <span>AppName</span>
                           </label>
                           <input
                             type="text"
                             class="form-control form-control-solid"
                             name="bundlename"
-				style="background-color:#161616"
                             placeholder="Example App (optional)"
                             id="bname"
                           />
@@ -146,14 +136,13 @@
                       <div class="col">
                         <div class="fv-row mb-7">
                           <label class="fs-6 fw-semibold form-label mt-3">
-                            <span>Change Bundle ID</span>
+                            <span>BundleID</span>
                           </label>
                           <input
                             type="text"
                             class="form-control form-control-solid"
                             name="bid"
                             placeholder="com.example.app (optional)"
-style="background-color:#161616"
                             id="bid"
                           />
                         </div>

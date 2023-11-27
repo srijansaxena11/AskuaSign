@@ -35,7 +35,7 @@ app.use('/', router);
 const port = process.env.PORT || 3000;
 const mongourl = process.env.MongoURL || "mongodb://localhost:27017";
 const jwttoken = process.env.JWTToken || "askuasign";
-const domain = process.env.Domain || "https://sign.askua.ovh";
+const domain = "https://sign.apptesters.org";
 
 const client = new MongoClient(mongourl);
 
@@ -80,7 +80,6 @@ async function signApp(uuid, res, req, store) {
 
     const appname = app.CustomName;
     const bid = app.BundleID;
-    const prov = app.DeleteProv;
 
     const password = signedtoken.password;
     
@@ -90,7 +89,7 @@ async function signApp(uuid, res, req, store) {
     const plistPath = path.join(__dirname, 'files', 'plists', `${uuid}.plist`);
     const signAppPath = path.join(__dirname, 'files', 'signed', `${uuid}.ipa`);
 
-    var nya = await execAwait(`zsign -k ${p12Path} -m ${provPath} ${password ? `-p ${password}` : ""} ${appPath} -o ${signAppPath} ${bid ? `-b ${bid.replace(/\s+/g, ' ').trim()}` : ""} ${appname ? `-n '${appname}'` : ""} -f ${prov ? '-x' : ''}`);
+    var nya = await execAwait(`zsign -k ${p12Path} -m ${provPath} ${password ? `-p ${password}` : ""} ${appPath} -o ${signAppPath} ${bid ? `-b ${bid.replace(/\s+/g, ' ').trim()}` : ""} ${appname ? `-n '${appname}'` : ""} -f`);
 
     if(nya == true) {
         return res.json({ status: 'error', message: "error while signing app (incorrect password)" });
@@ -100,7 +99,7 @@ async function signApp(uuid, res, req, store) {
     await fs.writeFileSync(plistPath, plist);
 }
 
-async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, removeprov)
+async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res)
 {
     const appPath = path.join(__dirname, 'files', 'temp', `${uuid}.ipa`);
     const p12Path = path.join(__dirname, 'files', 'certs', `${uuid}.p12`);
@@ -111,7 +110,6 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, remo
         CustomName: bname,
         Name: `${uuid}.ipa`,
         BundleID: bid,
-        DeleteProv: removeprov,
         Expire: moment().add(3, 'days').unix()
     }
 
@@ -119,7 +117,8 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, remo
     const DB = client.db('AskuaSign');
     const Apps = await DB.collection('Apps');
     const DUsers = await DB.collection('Stored');
-  
+
+    // check if app is file or string
     if(typeof app === "object") {
         await app.mv(appPath);
     }else if(typeof app === "string") {
@@ -127,6 +126,13 @@ async function uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, remo
         await fs.writeFileSync(appPath, data.data);
     }
 
+
+    if(typeof app == "object") {
+        await app.mv(appPath);
+    }else if(typeof app == "string") {
+        var data = await axios.get(app, {responseType: 'arraybuffer'});
+        await fs.writeFileSync(appPath, data.data);
+    }
     var cookie = req?.cookies?.token;
     if(store == "true") {
         if(cookie) {
@@ -184,7 +190,7 @@ router.post('/upload', async (req, res) => {
         return;
     }
 
-    const { password, bname, bid, store, removeprov } = req.body;
+    const { password, bname, bid, store } = req.body;
 
     const missingParams = ['ipa', 'p12', 'prov']
         .filter(param => !req.body[param] && !req.files[param]);
@@ -200,7 +206,7 @@ router.post('/upload', async (req, res) => {
 
         res.cookie('nya', nya, { maxAge: 31536000 });
 
-        await uploadApp(app, p12, prov, bname, bid, uuid, store, req, res, removeprov);
+        await uploadApp(app, p12, prov, bname, bid, uuid, store, req, res);
 
         res.json({ status: 'ok', message: "Uploaded!", uuid: uuid});
     } catch (error) {

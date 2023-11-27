@@ -10,6 +10,11 @@ services:
     restart: unless-stopped
     volumes:
       - ./files:/root/AskuaSign/files
+      - ./views:/root/AskuaSign/views
+      - ./assets:/root/AskuaSign/assets
+      #- ./.env:/root/AskuaSign/.env
+      - ./main.js:/root/AskuaSign/main.js
+      - ./utils.js:/root/AskuaSign/utils.js
     ports:
       - 3000:3000/tcp
     networks:
